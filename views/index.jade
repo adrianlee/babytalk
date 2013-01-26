@@ -3,6 +3,18 @@ extends layout
 block content
   .row
     .twelve.columns
-      h1.subheader= title
-      ul(id="list")
-      .button(id="talk") Talk
+    h1.subheader= title
+    h5.subheader built with WebRTC
+    hr
+  .row
+    .three.columns
+      .button.twelve.columns.success.large(id="talk") Talk
+
+      hr
+
+      label Push-To-Talk Button
+      input(type="text", id="pushToTalk", value="k", disabled)
+
+      hr
+    .nine.columns
+      #list

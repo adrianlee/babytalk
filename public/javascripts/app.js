@@ -13,7 +13,7 @@ function startUserMedia(stream) {
   console.log('Recorder initialised.');
 }
 
-function startRecord() {
+function keyRecord() {
   if (!flag) {
     recorder && recorder.record();
     flag = true;

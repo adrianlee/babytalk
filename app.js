@@ -28,7 +28,7 @@ app.configure('development', function(){
 });
 
 app.get('/', function (req, res) {
-  res.locals.title = "Babytalk";
+  res.locals.title = "babytalk";
   res.render('index', { port: app.get('port') });
 });
 

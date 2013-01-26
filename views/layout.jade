@@ -10,6 +10,7 @@ html
     //- script(src='/socket.io/socket.io.js')
     script(src='http://cdn.binaryjs.com/0/binary.js')
     script(src='javascripts/keymaster.min.js')
+    script(src='javascripts/moment.js')
     script(src='javascripts/recorder.js')
     script(src='javascripts/app.js')
     script
@@ -25,19 +26,17 @@ html
             //- console.log(new Blob([new DataView(data)], { type: 'audio/wav' }));
             //- console.log(new Blob(data));
             var url = URL.createObjectURL(new Blob(data));
-            var li = document.createElement('li');
+            var div = document.createElement('div');
             var au = document.createElement('audio');
-            var hf = document.createElement('a');
+            var hf = document.createElement('div');
 
             au.controls = true;
             au.autoplay = true;
             au.src = url;
-            hf.href = url;
-            hf.download = new Date().toISOString() + '.wav';
-            hf.innerHTML = hf.download;
-            li.appendChild(au);
-            li.appendChild(hf);
-            $('#list').append(li);
+            hf.innerHTML = moment(new Date()).format("h:mm:ss a");
+            div.appendChild(au);
+            div.appendChild(hf);
+            $('#list').prepend(div);
           });
 
           broadcastclient.on('end', function() {
@@ -52,7 +51,7 @@ html
 
       $(document).ready(function() {
         key('k', function() {
-          keyRecording();
+          keyRecord();
         });
 
         $('#talk').mousedown(function() {
@@ -61,6 +60,13 @@ html
 
         $('#talk').mouseup(function() {
           stopRecord();
+        });
+
+        $('#pushToTalk').keyup("changeData", function() {
+          console.log($('#pushToTalk').val());
+          key($('#pushToTalk').val(), function() {
+            keyRecord();
+          });
         });
 
         try {
