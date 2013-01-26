@@ -7,7 +7,6 @@ html
 
     script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js')
     script(src='//cdnjs.cloudflare.com/ajax/libs/foundation/3.2.2/javascripts/foundation.min.js')
-    //- script(src='/socket.io/socket.io.js')
     script(src='http://cdn.binaryjs.com/0/binary.js')
     script(src='javascripts/keymaster.min.js')
     script(src='javascripts/moment.js')
@@ -25,33 +24,30 @@ html
       binaryClient.on('open', function() {
         broadcastclient = binaryClient.createStream({hash: guid, type: 'read'});
 
-        //- binaryClient.on('stream', function(stream, meta) {
-          broadcastclient.on('data', function(data) {
-            console.log("New Data from Server!");
-            //- console.log(new Blob([new DataView(data)], { type: 'audio/wav' }));
-            //- console.log(new Blob(data));
-            var url = URL.createObjectURL(new Blob(data));
-            var div = document.createElement('div');
-            var au = document.createElement('audio');
-            var hf = document.createElement('div');
+        broadcastclient.on('data', function(data) {
+          console.log("New Data from Server!");
+          //- console.log(new Blob(data));
+          var url = URL.createObjectURL(new Blob(data));
+          var div = document.createElement('div');
+          var au = document.createElement('audio');
+          var hf = document.createElement('div');
 
-            au.controls = true;
-            au.autoplay = true;
-            au.src = url;
-            hf.innerHTML = moment(new Date()).format("h:mm:ss a");
-            div.appendChild(au);
-            div.appendChild(hf);
-            $('#list').prepend(div);
-          });
+          au.controls = true;
+          au.autoplay = true;
+          au.src = url;
+          hf.innerHTML = moment(new Date()).format("h:mm:ss a");
+          div.appendChild(au);
+          div.appendChild(hf);
+          $('#list').prepend(div);
+        });
 
-          broadcastclient.on('end', function() {
-            console.log("end");
-          });
+        broadcastclient.on('end', function() {
+          console.log("end");
+        });
 
-          broadcastclient.on('close', function() {
-            console.log("close");
-          });
-        //- });
+        broadcastclient.on('close', function() {
+          console.log("close");
+        });
       });
 
       $(document).ready(function() {
