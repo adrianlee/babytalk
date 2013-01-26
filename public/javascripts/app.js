@@ -13,11 +13,11 @@ function startUserMedia(stream) {
   console.log('Recorder initialised.');
 }
 
-function startRecording(button) {
+function startRecording() {
   if (!flag) {
     recorder && recorder.record();
     flag = true;
-    interval = setInterval(function() {
+    var interval = setInterval(function() {
       console.log('Recording...');
       if (!key.isPressed("k")) {
         clearInterval(interval);
@@ -28,12 +28,31 @@ function startRecording(button) {
   }
 }
 
-function stopRecording(button) {
+function stopRecording() {
   recorder && recorder.stop();
   console.log('Stopped recording.');
 
-  // create WAV download link using audio data blob
-  // createDownloadLink();
+  recorder.exportWAV(function(blob) {
+    console.log('Blob created.');
+    recorder.clear();
 
-  recorder.clear();
+    console.log(blob);
+
+    // window.socket.emit('wav', {msg: blob});
+    binaryClient.send(blob);
+
+    // var url = URL.createObjectURL(blob);
+    // var li = document.createElement('li');
+    // var au = document.createElement('audio');
+    // var hf = document.createElement('a');
+
+    // au.controls = true;
+    // au.src = url;
+    // hf.href = url;
+    // hf.download = new Date().toISOString() + '.wav';
+    // hf.innerHTML = hf.download;
+    // li.appendChild(au);
+    // li.appendChild(hf);
+    // $('#list').append(li);
+  });
 }
