@@ -1,0 +1,54 @@
+doctype 5
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/foundation/3.2.2/stylesheets/foundation.min.css')
+
+    script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js')
+    script(src='//cdnjs.cloudflare.com/ajax/libs/foundation/3.2.2/javascripts/foundation.min.js')
+    script(src='/socket.io/socket.io.js')
+    script(src='javascripts/keymaster.min.js')
+    script(src='javascripts/recorder.js')
+    script(src='javascripts/app.js')
+    script
+      var socket = io.connect('http://localhost');
+      socket.on('news', function (data) {
+        console.log(data);
+        socket.emit('my other event', { my: 'data' });
+      });
+
+
+      $(document).ready(function() {
+        key('k', function() {
+          startRecording();
+        });
+
+        $('#talk').mousedown(function() {
+          console.log('Handler for .mousedown() called.');
+        });
+
+        $('#talk').mouseup(function() {
+          console.log('Handler for .mouseup() called.');
+        });
+
+        try {
+          // webkit shim
+          window.AudioContext = window.AudioContext || window.webkitAudioContext;
+          navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+          window.URL = window.URL || window.webkitURL;
+
+          audio_context = new AudioContext;
+          console.log('Audio context set up.');
+          console.log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
+        } catch (e) {
+          alert('No web audio support in this browser!');
+        }
+
+        navigator.getUserMedia({audio: true}, startUserMedia, function(e) {
+          console.log('No live audio input: ' + e);
+        });
+      });
+  body
+    block content
+
