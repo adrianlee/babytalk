@@ -14,7 +14,12 @@ html
     script(src='javascripts/recorder.js')
     script(src='javascripts/app.js')
     script
-      window.binaryClient = new BinaryClient('ws://' + window.location.hostname + ':#{port}');
+      try {
+        window.binaryClient = new BinaryClient('ws://' + window.location.hostname + ':#{port}');
+      } catch (e) {
+        console.log(e);
+      }
+
       window.guid = GUID();
 
       binaryClient.on('open', function() {
