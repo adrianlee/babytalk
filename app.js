@@ -32,6 +32,19 @@ app.get('/', function (req, res) {
   res.render('index', { port: app.get('port') });
 });
 
+app.get('/stat', function (req, res) {
+  var c = 0;
+  for (var i in room) {
+    if (room.hasOwnProperty(i)) {
+      if (!room[i]._closed && !room[i]._ended) {
+        c++;
+      }
+    }
+  };
+  console.log(c);
+  res.send({stat:c});
+});
+
 server.listen(app.get('port'));
 
 var room = {};
@@ -65,7 +78,11 @@ bs.on('connection', function(client) {
 
       stream.on('close', function() {
         console.log("a client disconnected");
-        // console.log(bs.clients);
+        try {
+          delete room[meta.hash];
+        } catch (e) {
+          console.log(e);
+        }
       });
 
       client.on('error', function(e) {
