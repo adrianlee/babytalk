@@ -13,7 +13,7 @@ function startUserMedia(stream) {
   console.log('Recorder initialised.');
 }
 
-function startRecording() {
+function startRecord() {
   if (!flag) {
     recorder && recorder.record();
     flag = true;
@@ -22,37 +22,33 @@ function startRecording() {
       if (!key.isPressed("k")) {
         clearInterval(interval);
         flag = false;
-        stopRecording();
+        stopRecord();
       }
     }, 100);
   }
 }
+function buttonRecord() {
+  if (!flag) {
+    recorder && recorder.record();
+    console.log('Recording...');
+  }
+}
 
-function stopRecording() {
+function stopRecord() {
   recorder && recorder.stop();
   console.log('Stopped recording.');
 
   recorder.exportWAV(function(blob) {
     console.log('Blob created.');
     recorder.clear();
-
     console.log(blob);
-
-    // window.socket.emit('wav', {msg: blob});
-    binaryClient.send(blob);
-
-    // var url = URL.createObjectURL(blob);
-    // var li = document.createElement('li');
-    // var au = document.createElement('audio');
-    // var hf = document.createElement('a');
-
-    // au.controls = true;
-    // au.src = url;
-    // hf.href = url;
-    // hf.download = new Date().toISOString() + '.wav';
-    // hf.innerHTML = hf.download;
-    // li.appendChild(au);
-    // li.appendChild(hf);
-    // $('#list').append(li);
+    window.binaryClient.send(blob, { hash: window.guid, type: 'write' });
   });
+}
+
+function GUID () {
+  var S4 = function () {
+    return Math.floor(Math.random() * 0x10000).toString(16);
+  };
+  return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
 }

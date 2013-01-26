@@ -5,7 +5,6 @@ var express = require('express'),
 var app = express();
 
 var server = http.createServer(app)
-// var io = require('socket.io').listen(server);
 
 var BinaryServer = require('binaryjs').BinaryServer;
 var bs = BinaryServer({server: server});
@@ -35,29 +34,43 @@ app.get('/', function (req, res) {
 
 server.listen(app.get('port'));
 
-// io.sockets.on('connection', function (socket) {
-//   socket.emit('news', { hello: 'world' });
-//   socket.on('my other event', function (data) {
-//     console.log(data);
-//   });
-
-//   socket.on('wav', function (data) {
-//     console.log(data);
-//     // socket.emit('news', data);
-//   });
-// });
+var room = {};
 
 bs.on('connection', function(client) {
   // Incoming stream from browsers
-  client.on('stream', function(stream, meta){
-    // Send progress back
-    var parts = [];
-    stream.on('data', function(data){
-      parts.push(data);
-    });
-    stream.on('end', function(){
-      console.log(parts);
-      client.send(parts);
-    });
+  client.on('stream', function(stream, meta) {
+    if (meta.type && meta.type == 'read') {
+      room[meta.hash] = stream;
+    } else {
+      var parts = [];
+
+      stream.on('data', function(data) {
+        parts.push(data);
+      });
+
+      stream.on('end', function() {
+        for (i in room) {
+          if (meta.hash != i && !room[i]._closed && !room[i]._ended) {
+            try {
+              room[i].write(parts);
+            } catch (e) {
+              console.log(e);
+              delete room[i];
+            }
+          }
+        }
+        stream.end();
+        stream.destroy();
+      });
+
+      stream.on('close', function() {
+        console.log("a client disconnected");
+        // console.log(bs.clients);
+      });
+
+      client.on('error', function(e) {
+        console.log(e.stack, e.message);
+      });
+    }
   });
 });

@@ -7,17 +7,20 @@ html
 
     script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js')
     script(src='//cdnjs.cloudflare.com/ajax/libs/foundation/3.2.2/javascripts/foundation.min.js')
-    script(src='/socket.io/socket.io.js')
+    //- script(src='/socket.io/socket.io.js')
     script(src='http://cdn.binaryjs.com/0/binary.js')
     script(src='javascripts/keymaster.min.js')
     script(src='javascripts/recorder.js')
     script(src='javascripts/app.js')
     script
       window.binaryClient = new BinaryClient('ws://' + window.location.hostname + ':#{port}');
+      window.guid = GUID();
 
       binaryClient.on('open', function() {
-        binaryClient.on('stream', function(stream, meta) {
-          stream.on('data', function(data) {
+        broadcastclient = binaryClient.createStream({hash: guid, type: 'read'});
+
+        //- binaryClient.on('stream', function(stream, meta) {
+          broadcastclient.on('data', function(data) {
             console.log("New Data from Server!");
             //- console.log(new Blob([new DataView(data)], { type: 'audio/wav' }));
             //- console.log(new Blob(data));
@@ -36,40 +39,28 @@ html
             li.appendChild(hf);
             $('#list').append(li);
           });
-        });
+
+          broadcastclient.on('end', function() {
+            console.log("end");
+          });
+
+          broadcastclient.on('close', function() {
+            console.log("close");
+          });
+        //- });
       });
-
-      //- window.socket = io.connect('http://localhost');
-      //- socket.on('news', function (data) {
-      //-   console.log(new Blob(data));
-      //-   //- var url = URL.createObjectURL(data);
-      //-   //- var li = document.createElement('li');
-      //-   //- var au = document.createElement('audio');
-      //-   //- var hf = document.createElement('a');
-
-      //-   //- au.controls = true;
-      //-   //- au.src = url;
-      //-   //- hf.href = url;
-      //-   //- hf.download = new Date().toISOString() + '.wav';
-      //-   //- hf.innerHTML = hf.download;
-      //-   //- li.appendChild(au);
-      //-   //- li.appendChild(hf);
-      //-   //- $('#list').append(li);
-      //-   //- socket.emit('my other event', { my: 'data' });
-      //- });
-
 
       $(document).ready(function() {
         key('k', function() {
-          startRecording();
+          keyRecording();
         });
 
         $('#talk').mousedown(function() {
-          startRecording();
+          buttonRecord();
         });
 
         $('#talk').mouseup(function() {
-          console.log('Handler for .mouseup() called.');
+          stopRecord();
         });
 
         try {
