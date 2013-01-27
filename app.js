@@ -79,7 +79,7 @@ bs.on('connection', function(client) {
       stream.on('close', function() {
         console.log("a client disconnected");
         try {
-          delete room[meta.hash];
+          // delete room[meta.hash];
         } catch (e) {
           console.log(e);
         }
