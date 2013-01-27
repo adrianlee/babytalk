@@ -3,11 +3,12 @@ var express = require('express'),
     path = require('path');
 
 var app = express();
-
 var server = http.createServer(app)
 
 var BinaryServer = require('binaryjs').BinaryServer;
 var bs = BinaryServer({server: server});
+
+var room = {};
 
 app.configure(function(){
   app.set('port', process.env.VCAP_APP_PORT || 3000);
@@ -47,8 +48,6 @@ app.get('/stat', function (req, res) {
 
 server.listen(app.get('port'));
 
-var room = {};
-
 bs.on('connection', function(client) {
   // Incoming stream from browsers
   client.on('stream', function(stream, meta) {
@@ -63,14 +62,16 @@ bs.on('connection', function(client) {
 
       stream.on('end', function() {
         for (i in room) {
-          if (meta.hash != i && !room[i]._closed && !room[i]._ended) {
-            try {
-              room[i].write(parts);
-            } catch (e) {
-              console.log(e);
-              delete room[i];
+          // if (meta.hash != i) { // demo purposes, feedback for user
+            if (!room[i]._closed && !room[i]._ended) {
+              try {
+                room[i].write(parts);
+              } catch (e) {
+                console.log(e);
+                delete room[i];
+              }
             }
-          }
+          // }
         }
         stream.end();
         stream.destroy();
@@ -78,11 +79,6 @@ bs.on('connection', function(client) {
 
       stream.on('close', function() {
         console.log("a client disconnected");
-        try {
-          // delete room[meta.hash];
-        } catch (e) {
-          console.log(e);
-        }
       });
 
       client.on('error', function(e) {
