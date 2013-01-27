@@ -15,6 +15,7 @@ function startUserMedia(stream) {
 
 function keyRecord() {
   if (!flag) {
+    $('#talk').removeClass('success').addClass('secondary');
     recorder && recorder.record();
     flag = true;
     var interval = setInterval(function() {
@@ -27,14 +28,17 @@ function keyRecord() {
     }, 100);
   }
 }
+
 function buttonRecord() {
   if (!flag) {
+    $('#talk').removeClass('success').addClass('secondary');
     recorder && recorder.record();
     console.log('Recording...');
   }
 }
 
 function stopRecord() {
+  $('#talk').removeClass('secondary').addClass('success');
   recorder && recorder.stop();
   console.log('Stopped recording.');
 
